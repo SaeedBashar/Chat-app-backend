@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt");
 
 module.exports.signin = async (req, res, next)=>{
     try {
+        
         const { username, password } = req.body;
         const user = await Users.findOne({ username });
         console.log(req.body)
