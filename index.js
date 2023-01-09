@@ -1,6 +1,7 @@
 const express = require('express')
 const cors = require('cors');
 const mongoose = require('mongoose');
+const socket = require("socket.io");
 
 const authRoutes = require('./routes/auth')
 const usersRoutes = require('./routes/users');
@@ -30,6 +31,29 @@ app.use('/auth', authRoutes)
 app.use('/users', usersRoutes)
 app.use('/messages', msgRoutes)
 
-app.listen(process.env.PORT, ()=>{
+const server = app.listen(process.env.PORT, ()=>{
     console.log(`[STARTING] Server starting at port: ${process.env.PORT}`);
 })
+
+const io = socket(server, {
+  cors: {
+    origin: "http://localhost:3000",
+    credentials: true,
+  },
+});
+
+global.onlineUsers = new Map();
+io.on("connection", (socket) => {
+  global.chatSocket = socket;
+  socket.on("add-user", (userId) => {
+    console.log(userId)
+    onlineUsers.set(userId, socket.id);
+  });
+
+  socket.on("send-msg", (data) => {
+    const sendUserSocket = onlineUsers.get(data.to);
+    if (sendUserSocket) {
+      socket.to(sendUserSocket).emit("msg-recieve", data.msg);
+    }
+  });
+});
