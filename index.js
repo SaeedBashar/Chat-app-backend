@@ -3,7 +3,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const socket = require("socket.io");
 
-const authRoutes = require('./routes/auth')
+const authRoutes = require('./routes/auth');
 const usersRoutes = require('./routes/users');
 const msgRoutes = require('./routes/messages');
 
@@ -20,7 +20,7 @@ mongoose
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
-.then(() => {
+.then((client) => {
     console.log("Database Connected Successfull");
   })
   .catch((err) => {
